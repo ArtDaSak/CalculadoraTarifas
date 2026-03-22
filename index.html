@@ -28,6 +28,32 @@
           </div>
         </div>
 
+        <!-- Controles de moneda y aproximaciones -->
+        <div class="topbar-controls">
+          <!-- Toggle: aproximaciones -->
+          <button class="rounding-toggle is-active" id="roundingToggle" type="button"
+            aria-label="Activar/desactivar aproximaciones" aria-pressed="true">
+            <span class="rounding-toggle-text">Aproximaciones</span>
+            <div class="ui-switch" aria-hidden="true">
+              <div class="ui-switch-thumb"></div>
+            </div>
+          </button>
+
+          <!-- Selector de moneda -->
+          <div class="currency-wrapper">
+            <button class="currency-button" id="currencyButton" type="button"
+              aria-label="Seleccionar moneda" aria-expanded="false" aria-haspopup="listbox">
+              <span id="currencyButtonLabel">COP</span>
+              <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="chevron">
+                <path d="M2 4.5l4 3 4-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="currency-popover" id="currencyPopover" role="listbox" aria-label="Monedas disponibles">
+              <div class="currency-list" id="currencyList"></div>
+            </div>
+          </div>
+        </div>
+
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Cambiar tema">
           <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="4"></circle>
@@ -313,6 +339,38 @@
           <span class="footer-rights">© 2026 Todos los derechos reservados</span>
         </div>
       </footer>
+    </div>
+
+    <!-- ── Onboarding de primera carga ── -->
+    <div class="onboarding-overlay" id="onboardingOverlay" style="display:none;" role="dialog"
+         aria-modal="true" aria-labelledby="onboardingTitle">
+      <div class="onboarding-card">
+        <div class="onboarding-header">
+          <img src="logo.png" class="onboarding-logo" alt="ArtDäSak" />
+          <h2 id="onboardingTitle" class="onboarding-title">Configura tu región de trabajo</h2>
+          <p class="onboarding-subtitle">Elige la moneda con la que trabajas para calibrar las aproximaciones y el formato visual de la calculadora.</p>
+        </div>
+
+        <p class="onboarding-suggest" id="onboardingSuggest">Detectando moneda sugerida...</p>
+
+        <div class="onboarding-selector-row">
+          <select class="onboarding-select" id="onboardingSelect" aria-label="Moneda">
+            <!-- Opciones se generan por JS -->
+          </select>
+          <button class="onboarding-geo-btn" id="onboardingGeoBtn" type="button"
+            aria-label="Autodetectar" title="Autodetectar">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+              <path d="M5 3v4"/><path d="M7 5H3"/>
+            </svg>
+            <span id="onboardingGeoBtnLabel">Usar mi ubicación</span>
+          </button>
+        </div>
+
+        <button class="onboarding-confirm" id="onboardingConfirm" type="button">
+          Comenzar
+        </button>
+      </div>
     </div>
 
     <div class="tooltip" id="tooltip" role="dialog" aria-hidden="true"></div>
