@@ -1,5 +1,6 @@
 const WEEKS_PER_MONTH = 4.33;
 const MIN_FACTOR = 1.5;
+const STORAGE_KEY = 'artdasak_tarifas_state';
 
 const elements = {
   desiredMonthlyIncome: document.getElementById('desiredMonthlyIncome'),
@@ -298,12 +299,91 @@ function setupEvents() {
   ];
 
   watchedInputs.forEach((element) => {
-    element.addEventListener('input', updateCalculator);
-    element.addEventListener('change', updateCalculator);
+    element.addEventListener('input', () => { updateCalculator(); saveFormState(); });
+    element.addEventListener('change', () => { updateCalculator(); saveFormState(); });
+  });
+}
+
+/* ─── Persistencia con localStorage ─────────────────────────────────── */
+
+/**
+ * Lee el estado actual de todos los campos editables del formulario.
+ * @returns {Object}
+ */
+function getFormState() {
+  return {
+    desiredMonthlyIncome: elements.desiredMonthlyIncome.value,
+    dailyHours:           elements.dailyHours.value,
+    weeklyDays:           elements.weeklyDays.value,
+    minimumFactor:        elements.minimumFactor.value,
+    mediumFactor:         elements.mediumFactor.value,
+    idealFactor:          elements.idealFactor.value,
+    projectEstimatedTime: elements.projectEstimatedTime.value,
+    projectTimeUnit:      elements.projectTimeUnit.value,
+  };
+}
+
+/**
+ * Guarda el estado actual del formulario en localStorage.
+ */
+function saveFormState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getFormState()));
+  } catch (_) {
+    // localStorage no disponible (modo privado extremo, etc.)
+  }
+}
+
+/**
+ * Lee el estado guardado desde localStorage.
+ * Devuelve null si no existe o si el JSON está corrupto.
+ * @returns {Object|null}
+ */
+function loadFormState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const state = JSON.parse(raw);
+    // Verificación mínima: el objeto debe tener al menos una clave esperada
+    if (typeof state !== 'object' || state === null) return null;
+    if (!('desiredMonthlyIncome' in state)) return null;
+    return state;
+  } catch (_) {
+    return null;
+  }
+}
+
+/**
+ * Aplica un estado guardado a los campos del formulario.
+ * Solo sobrescribe el campo si el valor guardado es un string no vacío.
+ * @param {Object} state
+ */
+function applyFormState(state) {
+  const fieldMap = [
+    ['desiredMonthlyIncome', elements.desiredMonthlyIncome],
+    ['dailyHours',           elements.dailyHours],
+    ['weeklyDays',           elements.weeklyDays],
+    ['minimumFactor',        elements.minimumFactor],
+    ['mediumFactor',         elements.mediumFactor],
+    ['idealFactor',          elements.idealFactor],
+    ['projectEstimatedTime', elements.projectEstimatedTime],
+    ['projectTimeUnit',      elements.projectTimeUnit],
+  ];
+
+  fieldMap.forEach(([key, el]) => {
+    if (state[key] !== undefined && state[key] !== '') {
+      el.value = state[key];
+    }
   });
 }
 
 setupInfoButtons();
 setupThemeToggle();
 setupEvents();
+
+// Restaurar estado guardado (si existe) y recalcular
+const savedState = loadFormState();
+if (savedState) {
+  applyFormState(savedState);
+}
 updateCalculator();
