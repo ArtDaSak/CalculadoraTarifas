@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora de tarifas · ArtDäSak</title>
+    <meta
+      name="description"
+      content="Herramienta de cálculo estratégico de tarifas profesionales. Define tu ingreso objetivo, tus horas disponibles y obtén tres niveles de precio: piso, estándar e ideal."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar container">
+        <div class="brand-slot">
+          <img src="logo.png" class="brand-logo" alt="ArtDäSak" />
+          <div class="brand-copy">
+            <span class="brand-name">ArtDäSak</span>
+            <span class="brand-tagline">Calculadora de tarifas</span>
+          </div>
+        </div>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Cambiar tema">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+      </header>
+
+      <main class="workspace container">
+        <section class="workspace-grid">
+
+          <!-- ── Columna 1: Tarifa por hora ── -->
+          <section class="tool-column" aria-labelledby="hourlyTitle">
+            <div class="section-head section-head--accent">
+              <h1 id="hourlyTitle">Tarifa por hora</h1>
+            </div>
+
+            <!-- Módulo: Capacidad de trabajo -->
+            <article class="module-block" aria-labelledby="baseSectionTitle">
+              <div class="module-fields two-columns">
+                <label class="field">
+                  <span class="field-label-row">
+                    <span>Ingreso mensual objetivo</span>
+                    <button class="info-button" type="button" data-tooltip="El ingreso neto que quieres generar al mes como punto de partida. No es tu ganancia final, sino la base desde la cual se construye tu tarifa comercial." aria-label="Más información sobre ingreso mensual objetivo">
+                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.8" r="0.7" fill="currentColor"/></svg>
+                    </button>
+                  </span>
+                  <input id="desiredMonthlyIncome" type="number" min="1" step="10000" value="3000000" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label-row">
+                    <span>Horas efectivas al día</span>
+                    <button class="info-button" type="button" data-tooltip="Las horas que realmente dedicas a trabajo facturable cada día. Usa horas productivas, no el total de horas disponibles en tu jornada." aria-label="Más información sobre horas efectivas al día">
+                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.8" r="0.7" fill="currentColor"/></svg>
+                    </button>
+                  </span>
+                  <input id="dailyHours" type="number" min="0.5" step="0.5" value="4" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label-row">
+                    <span>Días activos por semana</span>
+                    <button class="info-button" type="button" data-tooltip="Los días que efectivamente trabajas cada semana. Descuenta días de reuniones no facturables, administración o descanso si aplica." aria-label="Más información sobre días activos por semana">
+                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.8" r="0.7" fill="currentColor"/></svg>
+                    </button>
+                  </span>
+                  <input id="weeklyDays" type="number" min="1" max="7" step="1" value="5" />
+                </label>
+
+                <label class="field field-readonly">
+                  <span class="field-label-row">
+                    <span>Semanas promedio al mes</span>
+                    <button class="info-button" type="button" data-tooltip="Valor fijo de 4.33, resultado de dividir las 52 semanas del año entre 12 meses. Refleja con precisión la realidad del calendario." aria-label="Más información sobre semanas promedio al mes">
+                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.8" r="0.7" fill="currentColor"/></svg>
+                    </button>
+                  </span>
+                  <input id="weeksPerMonth" type="number" value="4.33" readonly />
+                </label>
+              </div>
+
+              <div class="result-cluster compact-two">
+                <article class="result-card accent-result">
+                  <span class="result-label">Horas disponibles al mes</span>
+                  <strong class="result-value" id="monthlyHoursResult">0 h</strong>
+                  <span class="result-meta">Horas/día × días/semana × 4.33</span>
+                </article>
+
+                <article class="result-card">
+                  <span class="result-label">Valor base por hora</span>
+                  <strong class="result-value" id="netHourlyValueResult">$ 0</strong>
+                  <span class="result-meta">Ingreso objetivo ÷ horas disponibles</span>
+                </article>
+              </div>
+            </article>
+
+            <!-- Módulo: Multiplicadores y tarifas -->
+            <article class="module-block" aria-labelledby="factorsSectionTitle">
+              <div class="module-fields three-columns">
+                <label class="field">
+                  <span class="field-label-row">
+                    <span>Multiplicador mínimo</span>
+                    <button class="info-button" type="button" data-tooltip="El piso de tu tarifa comercial. Representa el límite inferior que no deberías cruzar, incluso en negociaciones con descuento o clientes nuevos." aria-label="Más información sobre multiplicador mínimo">
+                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.8" r="0.7" fill="currentColor"/></svg>
+                    </button>
+                  </span>
+                  <input id="minimumFactor" type="number" min="1.5" step="0.1" value="1.5" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label-row">
+                    <span>Multiplicador estándar</span>
+                    <button class="info-button" type="button" data-tooltip="Un valor intermedio para condiciones de trabajo normales. No es tu objetivo ideal, pero es aceptable cuando el contexto comercial lo requiere." aria-label="Más información sobre multiplicador estándar">
+                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.8" r="0.7" fill="currentColor"/></svg>
+                    </button>
+                  </span>
+                  <input id="mediumFactor" type="number" min="1.5" step="0.1" value="1.7" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label-row">
+                    <span>Multiplicador objetivo</span>
+                    <button class="info-button" type="button" data-tooltip="Tu tarifa comercial de referencia. Lo que deberías cobrar en condiciones ideales para cubrir tu ingreso objetivo con margen suficiente." aria-label="Más información sobre multiplicador objetivo">
+                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.8" r="0.7" fill="currentColor"/></svg>
+                    </button>
+                  </span>
+                  <input id="idealFactor" type="number" min="1.5" step="0.1" value="2.0" />
+                </label>
+              </div>
+
+              <div class="result-cluster triple-pricing">
+                <article class="result-card min-result">
+                  <span class="result-label">Piso de cobro</span>
+                  <strong class="result-value" id="minimumHourlyRateResult">$ 0</strong>
+                  <span class="result-meta">Referencia base para negociar</span>
+                </article>
+
+                <article class="result-card">
+                  <span class="result-label">Tarifa estándar</span>
+                  <strong class="result-value" id="mediumHourlyRateResult">$ 0</strong>
+                  <span class="result-meta">Rango en condiciones normales</span>
+                </article>
+
+                <article class="result-card ideal-result">
+                  <span class="result-label">Tarifa objetivo</span>
+                  <strong class="result-value" id="idealHourlyRateResult">$ 0</strong>
+                  <span class="result-meta">Tu tarifa comercial de referencia</span>
+                </article>
+              </div>
+            </article>
+          </section>
+
+          <!-- ── Columna 2: Precio por proyecto ── -->
+          <section class="tool-column" aria-labelledby="projectTitle">
+            <div class="section-head section-head--accent section-head--secondary">
+              <h2 id="projectTitle">Precio por proyecto</h2>
+              <p class="section-caption">Basado en tu tarifa por hora y la duración estimada</p>
+            </div>
+
+            <article class="module-block" aria-labelledby="projectSectionTitle">
+              <div class="module-fields two-columns split-project">
+                <label class="field">
+                  <span class="field-label-row">
+                    <span>Duración estimada</span>
+                    <button class="info-button" type="button" data-tooltip="Cuánto tiempo estimas que tomará completar el proyecto. Define la cantidad aquí y luego selecciona la unidad de tiempo abajo." aria-label="Más información sobre duración estimada">
+                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.8" r="0.7" fill="currentColor"/></svg>
+                    </button>
+                  </span>
+                  <input id="projectEstimatedTime" type="number" min="0.25" step="0.25" value="10" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label-row">
+                    <span>Expresada en</span>
+                    <button class="info-button" type="button" data-tooltip="La unidad con la que expresas la duración. Se convierte a horas internamente usando tu capacidad de trabajo definida a la izquierda." aria-label="Más información sobre unidad de tiempo">
+                      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v3.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.8" r="0.7" fill="currentColor"/></svg>
+                    </button>
+                  </span>
+                  <select id="projectTimeUnit">
+                    <option value="hour">Horas</option>
+                    <option value="day">Días</option>
+                    <option value="week">Semanas</option>
+                    <option value="month">Meses</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="result-cluster compact-one">
+                <article class="result-card accent-result">
+                  <span class="result-label">Equivalente en horas</span>
+                  <strong class="result-value" id="projectHoursResult">0 h</strong>
+                  <span class="result-meta">Base común para los tres escenarios</span>
+                </article>
+              </div>
+            </article>
+
+            <article class="module-block" aria-labelledby="projectRatesSectionTitle">
+              <div class="result-cluster triple-pricing">
+                <article class="result-card min-result">
+                  <span class="result-label">Precio piso</span>
+                  <strong class="result-value" id="projectMinimumPriceResult">$ 0</strong>
+                  <span class="result-meta">Horas estimadas × piso de cobro</span>
+                </article>
+
+                <article class="result-card">
+                  <span class="result-label">Precio estándar</span>
+                  <strong class="result-value" id="projectMediumPriceResult">$ 0</strong>
+                  <span class="result-meta">Horas estimadas × tarifa estándar</span>
+                </article>
+
+                <article class="result-card ideal-result">
+                  <span class="result-label">Precio objetivo</span>
+                  <strong class="result-value" id="projectIdealPriceResult">$ 0</strong>
+                  <span class="result-meta">Horas estimadas × tarifa objetivo</span>
+                </article>
+              </div>
+            </article>
+          </section>
+        </section>
+
+        <section class="reasoning-section" aria-labelledby="logicSectionTitle">
+          <div class="section-head section-head--centered">
+            <h2 id="logicSectionTitle">Cómo se construye este precio</h2>
+          </div>
+          <div class="reasoning-surface">
+            <div class="logic-explanation" id="logicExplanation"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-inner container">
+          <span class="footer-brand">ArtDäSak</span>
+          <span class="footer-sep" aria-hidden="true">·</span>
+          <span class="footer-copy">Herramienta de cálculo estratégico de tarifas profesionales</span>
+          <span class="footer-sep" aria-hidden="true">·</span>
+          <span class="footer-rights">© 2025 Todos los derechos reservados</span>
+        </div>
+      </footer>
+    </div>
+
+    <div class="tooltip" id="tooltip" role="dialog" aria-hidden="true"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
