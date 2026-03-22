@@ -521,6 +521,13 @@ button, input, select {
   line-height: 1.05;
   letter-spacing: -0.04em;
   color: var(--text-main);
+  white-space: nowrap;       /* impide que el número se parta en dos líneas */
+  overflow: hidden;
+}
+
+/* En columnas de tres, el espacio es menor — reducir el tamaño si es necesario */
+.triple-pricing .result-value {
+  font-size: clamp(0.9rem, 1.35vw, 1.65rem);
 }
 
 /* Valor ideal en degradado */
@@ -583,6 +590,230 @@ button, input, select {
 [data-theme="light"] .logic-explanation p {
   background: rgba(99, 102, 241, 0.04);
   border-left-color: rgba(99, 102, 241, 0.28);
+}
+
+/* ─── Reset Button ────────────────────────────────────────────────────── */
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 31.5%;
+  margin-left: auto;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(251, 113, 133, 0.2);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  box-shadow: 0 0 10px rgba(251, 113, 133, 0.1), 0 0 0 1px rgba(251, 113, 133, 0.07);
+  transition:
+    color var(--t-fast),
+    border-color var(--t-fast),
+    background var(--t-fast),
+    box-shadow var(--t-fast),
+    transform var(--t-fast);
+}
+
+.reset-button svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.5s ease;
+}
+
+.reset-button:hover {
+  color: #fb7185;
+  border-color: rgba(251, 113, 133, 0.45);
+  background: rgba(251, 113, 133, 0.06);
+  box-shadow: 0 0 18px rgba(251, 113, 133, 0.2), 0 0 0 1px rgba(251, 113, 133, 0.15);
+}
+
+.reset-button:hover svg {
+  transform: rotate(-200deg);
+}
+
+.reset-button:active {
+  transform: scale(0.96);
+}
+
+/* ─── Multipliers Explainer Section ──────────────────────────────────── */
+.multipliers-section {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.multipliers-surface {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  padding: 2.25rem 2rem;
+  box-shadow: var(--shadow-md);
+  display: grid;
+  gap: 2rem;
+}
+
+/* Lead — párrafo introductorio con tinte de acento */
+.multipliers-lead {
+  margin: 0;
+  font-size: 0.97rem;
+  color: var(--text-soft);
+  line-height: 1.78;
+  max-width: 72ch;
+  margin-inline: auto;
+  text-align: center;
+  padding: 1.1rem 1.5rem;
+  background: rgba(129, 140, 248, 0.05);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(129, 140, 248, 0.1);
+}
+
+.multipliers-lead strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* Grid de dos columnas */
+.multipliers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Título de columna — más visible y con acento índigo */
+.multipliers-block-title {
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  opacity: 0.75;
+  margin: 0 0 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.multipliers-block-title::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--primary-gradient);
+  flex-shrink: 0;
+}
+
+/* Lista de lo que el valor base no incluye */
+.multipliers-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.multipliers-list li {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  line-height: 1.52;
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  transition: background var(--t-fast);
+}
+
+.multipliers-list li:hover {
+  background: rgba(129, 140, 248, 0.05);
+}
+
+.multipliers-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0.6rem;
+  top: 0.48rem;
+  color: var(--primary);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+/* Tres niveles — mini cards con borde izquierdo de color */
+.multipliers-levels {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.multipliers-level {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem 0.9rem;
+  align-items: start;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-subtle);
+  position: relative;
+  overflow: hidden;
+}
+
+.multipliers-level::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+}
+
+/* Colores de borde izquierdo por nivel */
+.multipliers-level:has(.mult-min)::before   { background: var(--text-muted); opacity: 0.5; }
+.multipliers-level:has(.mult-std)::before   { background: var(--text-soft);  opacity: 0.6; }
+.multipliers-level:has(.mult-ideal)::before { background: var(--primary-gradient); opacity: 1; }
+
+.mult-level-name {
+  grid-column: 1 / -1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.mult-min   { color: var(--text-muted); }
+.mult-std   { color: var(--text-soft); }
+.mult-ideal { color: var(--primary); }
+
+.mult-level-desc {
+  grid-column: 1 / -1;
+  font-size: 0.88rem;
+  color: var(--text-soft);
+  line-height: 1.58;
+  margin-top: -0.1rem;
+}
+
+/* Responsive */
+@media (max-width: 780px) {
+  .multipliers-grid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .multipliers-surface {
+    padding: 1.5rem 1.25rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .multipliers-lead {
+    padding: 0.9rem 1rem;
+    font-size: 0.92rem;
+  }
 }
 
 /* ─── Footer ──────────────────────────────────────────────────────────── */

@@ -24,6 +24,7 @@ const elements = {
   logicExplanation: document.getElementById('logicExplanation'),
   themeToggle: document.getElementById('themeToggle'),
   tooltip: document.getElementById('tooltip'),
+  resetButton: document.getElementById('resetButton'),
 };
 
 function parsePositiveNumber(value, fallback = 0) {
@@ -35,12 +36,34 @@ function clampFactor(value) {
   return Math.max(MIN_FACTOR, parsePositiveNumber(value, MIN_FACTOR));
 }
 
+/**
+ * Extrae el valor numérico limpio de un string monetario formateado.
+ * "$ 3 000 000" → 3000000 | "3000000" → 3000000
+ */
+function parseMonetaryValue(str) {
+  const clean = String(str).replace(/[^0-9]/g, '');
+  const n = Number(clean);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+/**
+ * Formatea un número como valor monetario para mostrar en inputs y displays.
+ * 3000000 → "$ 3 000 000"
+ */
+function formatMonetaryInput(value) {
+  const n = Math.round(Number(value));
+  if (!Number.isFinite(n) || n <= 0) return '';
+  return '$ ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u2009');
+}
+
+/**
+ * Formatea un valor numérico como moneda para los resultados.
+ * 3000000 → "$ 3 000 000" (mismo patrón visual, espacio de separación de miles)
+ */
 function formatCurrency(value) {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0,
-  }).format(value);
+  const n = Math.round(value);
+  if (!Number.isFinite(n)) return '$ 0';
+  return '$ ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u2009');
 }
 
 function formatNumber(value, maximumFractionDigits = 2) {
@@ -72,8 +95,14 @@ function normalizeFactors() {
 }
 
 function getHourlyContext() {
-  const desiredMonthlyIncome = parsePositiveNumber(elements.desiredMonthlyIncome.value, 1);
-  const dailyHours = parsePositiveNumber(elements.dailyHours.value, 1);
+  // parseMonetaryValue limpia el formato visual antes de calcular
+  const desiredMonthlyIncome = parseMonetaryValue(elements.desiredMonthlyIncome.value) || 1;
+  const MAX_DAILY_HOURS = 24;
+  let dailyHours = parsePositiveNumber(elements.dailyHours.value, 1);
+  if (dailyHours > MAX_DAILY_HOURS) {
+    dailyHours = MAX_DAILY_HOURS;
+    elements.dailyHours.value = MAX_DAILY_HOURS;
+  }
   const weeklyDays = parsePositiveNumber(elements.weeklyDays.value, 1);
   const { minimumFactor, mediumFactor, idealFactor } = normalizeFactors();
 
@@ -140,10 +169,12 @@ function renderExplanation(context, projectTime, projectUnitLabel, projectHours,
       <strong>${formatNumber(context.minimumFactor, 1)}</strong>, estándar
       <strong>${formatNumber(context.mediumFactor, 1)}</strong> y objetivo
       <strong>${formatNumber(context.idealFactor, 1)}</strong>. Cada resultado se redondea también
-      hacia arriba al siguiente múltiplo de $1.000, obteniendo un piso de cobro de
+      hacia arriba al siguiente múltiplo de $1.000. Estos multiplicadores no son un recargo arbitrario:
+      existen para elevar el valor base hasta reflejar la realidad de prestar un servicio profesional
+      de forma independiente. El resultado: piso de cobro
       <strong>${formatCurrency(context.minimumHourlyRate)}</strong>,
-      una tarifa estándar de <strong>${formatCurrency(context.mediumHourlyRate)}</strong> y
-      una tarifa objetivo de <strong>${formatCurrency(context.idealHourlyRate)}</strong> por hora.
+      tarifa estándar <strong>${formatCurrency(context.mediumHourlyRate)}</strong> y
+      tarifa objetivo <strong>${formatCurrency(context.idealHourlyRate)}</strong> por hora.
     </p>
     <p>
       Para el proyecto estimado en <strong>${formatNumber(projectTime)}</strong> ${projectUnitLabel}
@@ -302,6 +333,53 @@ function setupEvents() {
     element.addEventListener('input', () => { updateCalculator(); saveFormState(); });
     element.addEventListener('change', () => { updateCalculator(); saveFormState(); });
   });
+
+  elements.resetButton.addEventListener('click', resetFormState);
+}
+
+/**
+ * Borra el estado guardado en localStorage, restablece los valores
+ * por defecto en todos los campos y recalcula la interfaz.
+ */
+function resetFormState() {
+  // Solo borra la clave de esta calculadora, sin afectar otros datos
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (_) {}
+
+  // Valores por defecto
+  elements.desiredMonthlyIncome.value = formatMonetaryInput(3000000);
+  elements.dailyHours.value           = '4';
+  elements.weeklyDays.value           = '5';
+  elements.minimumFactor.value        = '1.5';
+  elements.mediumFactor.value         = '1.7';
+  elements.idealFactor.value          = '2.0';
+  elements.projectEstimatedTime.value = '10';
+  elements.projectTimeUnit.value      = 'hour';
+
+  updateCalculator();
+}
+
+/**
+ * Gestiona el ciclo de vida visual del campo de ingreso mensual (tipo text):
+ * - Al enfocar: muestra el número limpio para editar fácilmente.
+ * - Al salir:   aplica el formato visual completo.
+ */
+function setupMonetaryInput() {
+  const input = elements.desiredMonthlyIncome;
+
+  input.addEventListener('focus', () => {
+    const n = parseMonetaryValue(input.value);
+    input.value = n > 0 ? n.toString() : '';
+    input.select();
+  });
+
+  input.addEventListener('blur', () => {
+    const n = parseMonetaryValue(input.value);
+    input.value = n > 0 ? formatMonetaryInput(n) : formatMonetaryInput(1);
+    updateCalculator();
+    saveFormState();
+  });
 }
 
 /* ─── Persistencia con localStorage ─────────────────────────────────── */
@@ -312,7 +390,8 @@ function setupEvents() {
  */
 function getFormState() {
   return {
-    desiredMonthlyIncome: elements.desiredMonthlyIncome.value,
+    // Guarda el valor numérico limpio (sin formato) para portabilidad
+    desiredMonthlyIncome: String(parseMonetaryValue(elements.desiredMonthlyIncome.value) || ''),
     dailyHours:           elements.dailyHours.value,
     weeklyDays:           elements.weeklyDays.value,
     minimumFactor:        elements.minimumFactor.value,
@@ -360,7 +439,6 @@ function loadFormState() {
  */
 function applyFormState(state) {
   const fieldMap = [
-    ['desiredMonthlyIncome', elements.desiredMonthlyIncome],
     ['dailyHours',           elements.dailyHours],
     ['weeklyDays',           elements.weeklyDays],
     ['minimumFactor',        elements.minimumFactor],
@@ -375,15 +453,26 @@ function applyFormState(state) {
       el.value = state[key];
     }
   });
+
+  // El campo monetario requiere formato visual al restaurar
+  if (state.desiredMonthlyIncome) {
+    const n = parseMonetaryValue(state.desiredMonthlyIncome);
+    if (n > 0) elements.desiredMonthlyIncome.value = formatMonetaryInput(n);
+  }
 }
 
 setupInfoButtons();
 setupThemeToggle();
 setupEvents();
+setupMonetaryInput();
 
 // Restaurar estado guardado (si existe) y recalcular
 const savedState = loadFormState();
 if (savedState) {
   applyFormState(savedState);
+} else {
+  // Primera carga: aplicar formato visual al valor por defecto del HTML
+  const defaultN = parseMonetaryValue(elements.desiredMonthlyIncome.value);
+  if (defaultN > 0) elements.desiredMonthlyIncome.value = formatMonetaryInput(defaultN);
 }
 updateCalculator();
